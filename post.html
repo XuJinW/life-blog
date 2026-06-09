@@ -8,19 +8,33 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>📝 生活拾贝</h1>
-            <p><a href="index.html">← 返回首页</a></p>
-        </header>
+    <header>
+        <h1>📝 生活拾贝</h1>
+        <p><a href="index.html">← 返回首页</a></p>
+    </header>
+    <main id="postDetail">
+    <div class="loading">加载文章...</div>
+</main>
 
-        <main id="postDetail">
-            <div class="loading">加载文章...</div>
-        </main>
+<!-- 固定评论容器（不会被动态渲染覆盖） -->
+<div class="comments-section">
+    <h3>💬 评论区</h3>
+    <div class="giscus" id="giscus-container"></div>
+</div>
 
-        <footer>
-            <p>© 2026 生活拾贝 · 用文字留住时光</p>
-        </footer>
-    </div>
+<footer>
+    <p>© 2026 生活拾贝 · 用文字留住时光</p>
+</footer>
+
+    <main id="postDetail">
+        <div class="loading">加载文章...</div>
+    </main>
+
+    <footer>
+        <p>© 2026 生活拾贝 · 用文字留住时光</p>
+    </footer>
+</div>
+    
 
     <script src="script.js"></script>
 </body>

@@ -81,15 +81,15 @@ container.innerHTML = `
         </button>
     </div>
 `;
-// 在 loadPostDetail 函数末尾添加
-loadGiscusComments();
+
 
     } catch (err) {
         container.innerHTML = '<p>加载文章失败。</p>';
         console.error(err);
     }
 }
-
+// 在 loadPostDetail 函数末尾添加
+loadGiscusComments();
 // 辅助函数
 function formatDate(dateStr) {
     const date = new Date(dateStr);

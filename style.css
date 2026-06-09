@@ -160,3 +160,14 @@ a {
         font-size: 1.5rem;
     }
 }
+/* 评论区域样式 */
+.comments-section {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+}
+.comments-section h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #c45c2c;
+    padding-left: 0.8rem;
+}
