@@ -55,50 +55,32 @@ async function loadPostList() {
 // 加载单篇文章详情到 post.html
 async function loadPostDetail() {
     const container = document.getElementById('postDetail');
+    if (!container) return;
     const id = getQueryParam('id');
-    // ... 获取文章数据 post
-
-    // 1. 渲染HTML（包含点赞按钮）
-    container.innerHTML = `
-        <h1>${escapeHtml(post.title)}</h1>
-        <div class="post-meta">📅 ${formatDate(post.date)}</div>
-        <div class="post-content">${post.content}</div>
-        <div class="post-footer">
-            <button id="likeBtn" class="like-btn">❤️ <span id="likeCount">0</span> 个赞</button>
-        </div>
-    `;
-
-    // 2. 绑定点赞事件（必须在渲染之后）
-    const likeBtn = document.getElementById('likeBtn');
-    const likeCountSpan = document.getElementById('likeCount');
-    const postId = id;
-    const likeKey = `life-blog-${postId}`;
-
-    // 获取当前点赞数
-    fetch(`https://api.countapi.xyz/get/${likeKey}`)
-        .then(res => res.json())
-        .then(data => {
-            likeCountSpan.innerText = data.value || 0;
-        })
-        .catch(() => likeCountSpan.innerText = '0');
-
-    // 绑定点击事件
-    likeBtn.addEventListener('click', () => {
-        fetch(`https://api.countapi.xyz/hit/${likeKey}`, { method: 'GET' })
-            .then(res => res.json())
-            .then(data => {
-                likeCountSpan.innerText = data.value;
-                likeBtn.style.transform = 'scale(1.1)';
-                setTimeout(() => { likeBtn.style.transform = ''; }, 200);
-            })
-            .catch(err => console.warn('点赞失败', err));
-    });
-
-    // 3. 加载评论区（见下一步）
-    loadGiscusComments();
+    if (!id) {
+        container.innerHTML = '<p>没有指定文章 ID。</p>';
+        return;
+    }
+    try {
+        const res = await fetch('posts.json');
+        const posts = await res.json();
+        const post = posts.find(p => p.id == id);
+        if (!post) {
+            container.innerHTML = '<p>文章不存在。</p>';
+            return;
+        }
+        document.title = `${post.title} | 生活拾贝`;
+        container.innerHTML = `
+            <h1>${escapeHtml(post.title)}</h1>
+            <div class="post-meta">📅 ${formatDate(post.date)}</div>
+            <div class="post-content">${post.content}</div>
+        `;
+    } catch (err) {
+        container.innerHTML = '<p>加载文章失败。</p>';
+        console.error(err);
+    }
 }
-// 在 loadPostDetail 函数末尾添加
-loadGiscusComments();
+
 // 辅助函数
 function formatDate(dateStr) {
     const date = new Date(dateStr);
@@ -120,30 +102,4 @@ if (window.location.pathname.includes('post.html')) {
     loadPostDetail();
 } else {
     loadPostList();
-}
-function loadGiscusComments() {
-    const container = document.getElementById('giscus-container');
-    if (!container) {
-        console.warn('没有找到 giscus-container');
-        return;
-    }
-    // 避免重复加载
-    if (container.hasChildNodes()) return;
-
-    const script = document.createElement('script');
-    script.src = 'https://giscus.app/client.js';
-    script.setAttribute('data-repo', 'XuJinW/life-blog');
-    script.setAttribute('data-repo-id', 'R_kgDOS1T9Ng');      // 从 giscus.app 复制
-    script.setAttribute('data-category', 'Announcements');
-    script.setAttribute('data-category-id', 'DIC_kwDOS1T9Ns4C-0i7'); // 从 giscus.app 复制
-    script.setAttribute('data-mapping', 'pathname');
-    script.setAttribute('data-strict', '0');
-    script.setAttribute('data-reactions-enabled', '1');
-    script.setAttribute('data-emit-metadata', '0');
-    script.setAttribute('data-input-position', 'bottom');
-    script.setAttribute('data-theme', 'preferred_color_scheme');
-    script.setAttribute('data-lang', 'zh-CN');
-    script.crossOrigin = 'anonymous';
-    script.async = true;
-    container.appendChild(script);
 }
