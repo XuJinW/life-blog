@@ -7,7 +7,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+       <!-- 全屏背景容器 -->
+    <div class="bg-container" id="bgContainer"></div>
+
+    <!-- 主内容区（加半透背景，提高可读性） -->
+    <div class="content-overlay">
+        <div class="container">
+            <!-- 动态文案区域 -->
+            <div class="hero-text" id="heroText"></div>
         <header>
             <h1>📝 生活拾贝</h1>
             <p>一些随手记下的日常与思绪</p>
@@ -24,6 +31,7 @@
         <footer>
             <p>© 2026 生活拾贝 · 用文字留住时光</p>
         </footer>
+       </div>
     </div>
 
     <script src="script.js"></script>

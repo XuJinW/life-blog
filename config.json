@@ -1,0 +1,11 @@
+{
+  "background": {
+    "type": "image",
+    "value": "image/preview.jpg",
+    "color": "#fef9f0"
+  },
+  "hero": {
+    "text": "记录生活，漫笔时光",
+    "position": "center"
+  }
+}

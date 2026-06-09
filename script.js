@@ -1,10 +1,70 @@
-// 公用函数：获取 URL 参数
+// ==================== 加载首页配置 ====================
+async function loadHomeConfig() {
+    try {
+        const res = await fetch('config.json');
+        if (!res.ok) throw new Error('config.json 不存在，使用默认配置');
+        const config = await res.json();
+        applyConfig(config);
+    } catch (err) {
+        console.warn('使用默认配置', err);
+        applyDefaultConfig();
+    }
+}
+
+function applyConfig(config) {
+    const bgContainer = document.getElementById('bgContainer');
+    const heroContainer = document.getElementById('heroText');
+
+    // 1. 背景
+    if (config.background.type === 'image') {
+        bgContainer.style.backgroundImage = `url(${config.background.value})`;
+        bgContainer.style.backgroundColor = 'transparent';
+    } else {
+        bgContainer.style.backgroundColor = config.background.value || '#fef9f0';
+        bgContainer.style.backgroundImage = 'none';
+    }
+
+    // 2. 文案
+    if (heroContainer) {
+        const text = config.hero.text || '记录生活，漫笔时光';
+        heroContainer.innerHTML = `<h2>${escapeHtml(text).replace(/\n/g, '<br>')}</h2>`;
+        // 设置垂直位置
+        const pos = config.hero.position || 'center';
+        heroContainer.style.position = 'relative';
+        if (pos === 'top') {
+            heroContainer.style.marginTop = '5vh';
+            heroContainer.style.marginBottom = '2rem';
+        } else if (pos === 'center') {
+            heroContainer.style.marginTop = '20vh';
+            heroContainer.style.marginBottom = '2rem';
+        } else if (pos === 'bottom') {
+            heroContainer.style.marginTop = '40vh';
+            heroContainer.style.marginBottom = '5rem';
+        } else if (pos.includes('%') || pos.includes('px')) {
+            // 自定义像素或百分比
+            heroContainer.style.marginTop = pos;
+        } else {
+            heroContainer.style.marginTop = '10vh';
+        }
+    }
+}
+
+function applyDefaultConfig() {
+    const bgContainer = document.getElementById('bgContainer');
+    bgContainer.style.backgroundColor = '#fef9f0';
+    const heroContainer = document.getElementById('heroText');
+    if (heroContainer) {
+        heroContainer.innerHTML = '<h2>记录生活，漫笔时光</h2>';
+        heroContainer.style.marginTop = '15vh';
+    }
+}
+
+// ==================== 原有函数（保持不变） ====================
 function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(param);
 }
 
-// 加载文章列表到 index.html
 async function loadPostList() {
     const container = document.getElementById('postsList');
     if (!container) return;
@@ -15,7 +75,6 @@ async function loadPostList() {
             container.innerHTML = '<p>暂无文章，先去写几篇吧~</p>';
             return;
         }
-        // 按日期倒序
         posts.sort((a,b) => new Date(b.date) - new Date(a.date));
         let html = '';
         for (let post of posts) {
@@ -29,7 +88,7 @@ async function loadPostList() {
             `;
         }
         container.innerHTML = html;
-        // 绑定搜索功能
+        // 搜索功能
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
@@ -52,7 +111,6 @@ async function loadPostList() {
     }
 }
 
-// 加载单篇文章详情到 post.html
 async function loadPostDetail() {
     const container = document.getElementById('postDetail');
     if (!container) return;
@@ -81,7 +139,6 @@ async function loadPostDetail() {
     }
 }
 
-// 辅助函数
 function formatDate(dateStr) {
     const date = new Date(dateStr);
     return `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
@@ -97,9 +154,10 @@ function escapeHtml(str) {
     });
 }
 
-// 根据当前页面执行不同的加载函数
+// ==================== 页面启动 ====================
 if (window.location.pathname.includes('post.html')) {
     loadPostDetail();
 } else {
-    loadPostList();
+    loadHomeConfig();  // 先加载背景和文案配置
+    loadPostList();    // 再加载文章列表
 }
