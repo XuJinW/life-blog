@@ -70,11 +70,20 @@ async function loadPostDetail() {
             return;
         }
         document.title = `${post.title} | 生活拾贝`;
-        container.innerHTML = `
-            <h1>${escapeHtml(post.title)}</h1>
-            <div class="post-meta">📅 ${formatDate(post.date)}</div>
-            <div class="post-content">${post.content}</div>
-        `;
+        // 渲染文章内容（包括标题、日期、正文）
+container.innerHTML = `
+    <h1>${escapeHtml(post.title)}</h1>
+    <div class="post-meta">📅 ${formatDate(post.date)}</div>
+    <div class="post-content">${post.content}</div>
+    <div class="post-footer">
+        <button id="likeBtn" class="like-btn">
+            ❤️ <span id="likeCount">0</span> 个赞
+        </button>
+    </div>
+`;
+// 在 loadPostDetail 函数末尾添加
+loadGiscusComments();
+
     } catch (err) {
         container.innerHTML = '<p>加载文章失败。</p>';
         console.error(err);
@@ -102,4 +111,27 @@ if (window.location.pathname.includes('post.html')) {
     loadPostDetail();
 } else {
     loadPostList();
+}
+function loadGiscusComments() {
+    const container = document.getElementById('giscus-container');
+    if (!container) return;
+    // 避免重复加载
+    if (container.hasChildNodes()) return;
+    
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', 'XuJinW/life-blog');      // 替换成你的仓库
+    script.setAttribute('data-repo-id', 'R_kgDOS1T9Ng');        // 从 giscus.app 获取
+    script.setAttribute('data-category', 'Announcements');
+    script.setAttribute('data-category-id', 'DIC_kwDOS1T9Ns4C-0i7'); // 从 giscus.app 获取
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '0');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'bottom');
+    script.setAttribute('data-theme', 'preferred_color_scheme');
+    script.setAttribute('data-lang', 'zh-CN');
+    script.crossOrigin = 'anonymous';
+    script.async = true;
+    container.appendChild(script);
 }
